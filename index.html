@@ -1,38 +1,81 @@
 <!DOCTYPE html>
-<html>
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Roboto:wght@300;500&display=swap" rel="stylesheet">
     <style>
-        body { background: #1a1a1a; color: white; font-family: sans-serif; text-align: center; padding: 20px; }
-        .card { background: #2a2a2a; border-radius: 15px; padding: 20px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); }
+        :root { --primary: #00d2ff; --secondary: #3a7bd5; --bg: #0f0f0f; --card: #1a1a1a; --danger: #ff4b2b; }
+        body { background: var(--bg); color: white; font-family: 'Roboto', sans-serif; margin: 0; padding: 15px; overflow-x: hidden; }
+        h2 { font-family: 'Orbitron', sans-serif; color: var(--primary); text-transform: uppercase; letter-spacing: 2px; text-shadow: 0 0 10px rgba(0,210,255,0.5); }
+        
+        .status-card { background: linear-gradient(135deg, var(--card), #252525); border-left: 4px solid var(--primary); border-radius: 12px; padding: 15px; margin-bottom: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.3); }
+        
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        
         button { 
-            background: #3498db; border: none; color: white; padding: 15px 30px; 
-            border-radius: 10px; font-size: 16px; margin: 10px; width: 80%; cursor: pointer;
+            background: #222; border: 1px solid #444; color: #ccc; padding: 12px; border-radius: 8px; 
+            font-size: 14px; font-weight: 500; transition: 0.3s; display: flex; align-items: center; justify-content: center; flex-direction: column;
         }
-        button.danger { background: #e74c3c; }
-        h2 { color: #3498db; }
+        button:active { transform: scale(0.95); background: var(--secondary); color: white; border-color: var(--primary); box-shadow: 0 0 15px var(--primary); }
+        
+        .btn-main { background: rgba(0, 210, 255, 0.1); border-color: var(--primary); color: var(--primary); }
+        .btn-danger { color: var(--danger); border-color: rgba(255, 75, 43, 0.3); }
+        .btn-danger:active { background: var(--danger); box-shadow: 0 0 15px var(--danger); }
+
+        .input-group { background: var(--card); border-radius: 12px; padding: 15px; border: 1px solid #333; }
+        input { 
+            width: 100%; background: #000; border: 1px solid #444; color: var(--primary); padding: 12px; 
+            border-radius: 8px; box-sizing: border-box; font-family: 'Courier New', monospace; outline: none;
+        }
+        .send-custom { width: 100%; margin-top: 10px; background: var(--primary); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
-    <h2>☁️ ADMIN PANEL</h2>
-    <div class="card">
-        <p>Управление сервером CS 1.6</p>
-        <button onclick="send('sv_restart 1')">🔄 Рестарт раунда</button>
-        <button onclick="send('status')">📊 Статус игроков</button>
-        <button onclick="send('amx_mapmenu')">🗺 Меню карт</button>
+    <div style="text-align: center;">
+        <h2>Nebesnyi Panel</h2>
+        <p style="font-size: 12px; color: #888;">Control System v3.0</p>
     </div>
-    <div class="card">
-        <button class="danger" onclick="send('quit')">⚠️ Выключить (RCON)</button>
+
+    <div class="status-card">
+        <div style="font-size: 14px; color: #888;">Сервер:</div>
+        <div style="font-size: 18px; font-weight: bold;">Небесный Проект [CS 1.6]</div>
+    </div>
+
+    <div class="grid">
+        <button class="btn-main" onclick="send('sv_restart 1')"><span>🔄</span><br>Рестарт</button>
+        <button class="btn-main" onclick="send('status')"><span>👥</span><br>Статус</button>
+        <button class="btn-main" onclick="send('amx_mapmenu')"><span>🗺</span><br>Карты</button>
+        <button class="btn-main" onclick="send('amx_who')"><span>🆔</span><br>Админы</button>
+    </div>
+
+    <div class="input-group">
+        <div style="margin-bottom: 10px; font-size: 14px; color: var(--primary);">Ручная команда:</div>
+        <input type="text" id="cmdInput" placeholder="Напр: amx_ban 'Bomj' 0 'Cheat'">
+        <button class="send-custom" onclick="sendCustom()">ОТПРАВИТЬ В КОНСОЛЬ</button>
+    </div>
+
+    <div style="margin-top: 20px;">
+        <button class="btn-danger" style="width: 100%;" onclick="send('exit')">🔴 ВЫКЛЮЧИТЬ СЕРВЕР</button>
     </div>
 
     <script>
         let tg = window.Telegram.WebApp;
-        tg.expand(); // Развернуть на весь экран
+        tg.expand();
+        tg.MainButton.hide();
 
         function send(cmd) {
-            tg.sendData(cmd); // Отправляет команду боту
+            tg.sendData(cmd);
+            tg.HapticFeedback.impactOccurred('medium'); // Виброотклик
+        }
+
+        function sendCustom() {
+            let val = document.getElementById('cmdInput').value;
+            if(val) {
+                send(val);
+                document.getElementById('cmdInput').value = '';
+            }
         }
     </script>
 </body>
